@@ -88,6 +88,56 @@ body {
   padding: 10px 10px 4px;
 }
 
+/* ── Grupo colapsable Administración ─────────────────────────── */
+
+.sidebar-grupo-toggle {
+  justify-content: flex-start;
+  position: relative;
+}
+
+.sidebar-chevron {
+  margin-left: auto;
+  font-size: 1rem;
+  color: var(--color-texto-suave);
+  transition: transform 0.2s ease;
+  display: inline-block;
+  line-height: 1;
+}
+
+.sidebar-chevron.abierto {
+  transform: rotate(90deg);
+}
+
+.sidebar-subgrupo {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.25s ease;
+  margin: 2px 0 4px 10px;
+  border-left: 2px solid var(--color-borde);
+  padding-left: 8px;
+}
+
+.sidebar-subgrupo.visible {
+  max-height: 200px;
+}
+
+.sidebar-sublink {
+  font-size: 0.825rem;
+  color: var(--color-texto-suave);
+  padding: 6px 10px;
+}
+
+.sidebar-sublink:hover {
+  background: #eff6ff;
+  color: var(--color-primario);
+}
+
+.sidebar-sublink.activo {
+  color: var(--color-primario);
+  background: #eff6ff;
+  font-weight: 600;
+}
+
 .sidebar-link {
   display: flex;
   align-items: center;

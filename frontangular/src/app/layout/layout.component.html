@@ -5,7 +5,8 @@
       <span class="sidebar-marca-texto">Lavadero</span>
     </div>
 
-    @for (item of items; track item.ruta) {
+    <!-- Links directos (todos los roles) -->
+    @for (item of itemsDirectos; track item.ruta) {
       <a
         class="sidebar-link"
         [routerLink]="item.ruta"
@@ -14,6 +15,46 @@
         <span class="icono">{{ item.icono }}</span>
         {{ item.label }}
       </a>
+    }
+
+    <!-- Sección solo admin -->
+    @if (esAdmin) {
+
+      <!-- Grupo colapsable: Administración -->
+      <button
+        class="sidebar-link sidebar-grupo-toggle"
+        [class.activo]="adminAbierto"
+        (click)="toggleAdmin()"
+      >
+        <span class="icono">⚙</span>
+        Administración
+        <span class="sidebar-chevron" [class.abierto]="adminAbierto">›</span>
+      </button>
+
+      <div class="sidebar-subgrupo" [class.visible]="adminAbierto">
+        @for (item of itemsAdmin; track item.ruta) {
+          <a
+            class="sidebar-link sidebar-sublink"
+            [routerLink]="item.ruta"
+            routerLinkActive="activo"
+          >
+            <span class="icono">{{ item.icono }}</span>
+            {{ item.label }}
+          </a>
+        }
+      </div>
+
+      <!-- Links de operación -->
+      @for (item of itemsOperacion; track item.ruta) {
+        <a
+          class="sidebar-link"
+          [routerLink]="item.ruta"
+          routerLinkActive="activo"
+        >
+          <span class="icono">{{ item.icono }}</span>
+          {{ item.label }}
+        </a>
+      }
     }
 
     <div class="sidebar-footer">

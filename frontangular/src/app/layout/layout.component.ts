@@ -10,21 +10,31 @@ interface ItemMenu {
   ruta: string;
   label: string;
   icono: string;
-  soloAdmin?: boolean;
 }
 
-const MENU_ITEMS: ItemMenu[] = [
-  { ruta: '/dashboard',     label: 'Panel',          icono: '⊞' },
-  { ruta: '/mi-perfil',     label: 'Mi perfil',       icono: '◯' },
-  { ruta: '/turnos',        label: 'Turnos',          icono: '◷', soloAdmin: true },
-  { ruta: '/clientes',      label: 'Clientes',        icono: '◻', soloAdmin: true },
-  { ruta: '/vehiculos',     label: 'Vehículos',       icono: '◈', soloAdmin: true },
-  { ruta: '/servicios',     label: 'Servicios',       icono: '◆', soloAdmin: true },
-  { ruta: '/liquidaciones', label: 'Liquidaciones',   icono: '◎', soloAdmin: true },
-  { ruta: '/asistencia',    label: 'Asistencia',      icono: '◑', soloAdmin: true },
-  { ruta: '/configuracion', label: 'Configuración',   icono: '◐', soloAdmin: true },
-  { ruta: '/caja',          label: 'Caja',             icono: '◫', soloAdmin: true },
+// Links directos visibles para todos los roles
+const ITEMS_DIRECTOS: ItemMenu[] = [
+  { ruta: '/dashboard', label: 'Panel', icono: '⊞' },
 ];
+
+// Links directos solo para admin (fuera del grupo Administración)
+const ITEMS_OPERACION: ItemMenu[] = [
+  { ruta: '/turnos',        label: 'Turnos',       icono: '◷' },
+  { ruta: '/caja',          label: 'Caja',          icono: '◫' },
+  { ruta: '/liquidaciones', label: 'Liquidaciones', icono: '◎' },
+  { ruta: '/asistencia',    label: 'Asistencia',    icono: '◑' },
+];
+
+// Subitems del grupo Administración
+const ITEMS_ADMIN: ItemMenu[] = [
+  { ruta: '/clientes',      label: 'Clientes',  icono: '◻' },
+  { ruta: '/vehiculos',     label: 'Vehículos', icono: '◈' },
+  { ruta: '/servicios',     label: 'Servicios', icono: '◆' },
+  { ruta: '/configuracion', label: 'Personal',  icono: '◉' },
+  { ruta: '/mi-perfil',     label: 'Mi perfil', icono: '◯' },
+];
+
+const RUTAS_GRUPO_ADMIN = new Set(ITEMS_ADMIN.map(i => i.ruta));
 
 @Component({
   selector: 'app-layout',
@@ -39,18 +49,32 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private readonly realtime = inject(RealtimeService);
 
   usuario: Usuario | null = null;
-  items: ItemMenu[] = [];
+  esAdmin = false;
+  itemsDirectos: ItemMenu[] = [];
+  itemsOperacion: ItemMenu[] = [];
+  itemsAdmin: ItemMenu[] = [];
+  adminAbierto = false;
 
   ngOnInit(): void {
-    // La sesión ya fue cargada por el sesionResolver antes de llegar aquí
     this.usuario = this.sesion.obtener();
-    const esAdmin = this.sesion.esAdmin();
-    this.items = MENU_ITEMS.filter(i => !i.soloAdmin || esAdmin);
+    this.esAdmin = this.sesion.esAdmin();
+    this.itemsDirectos = ITEMS_DIRECTOS;
+    if (this.esAdmin) {
+      this.itemsOperacion = ITEMS_OPERACION;
+      this.itemsAdmin = ITEMS_ADMIN;
+      // Auto-abrir si la ruta actual es de administración
+      const rutaActual = this.router.url.split('?')[0];
+      this.adminAbierto = RUTAS_GRUPO_ADMIN.has(rutaActual);
+    }
     this.realtime.conectar();
   }
 
   ngOnDestroy(): void {
     this.realtime.desconectar();
+  }
+
+  toggleAdmin(): void {
+    this.adminAbierto = !this.adminAbierto;
   }
 
   logout(): void {
